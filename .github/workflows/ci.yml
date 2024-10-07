@@ -35,4 +35,4 @@ jobs:
          lfs: true
     - uses: dtolnay/rust-toolchain@stable
     - name: Build shim
-      run: cargo build
+      run: cargo build --locked
