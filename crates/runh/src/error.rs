@@ -54,7 +54,7 @@ pub enum Error {
     #[error(transparent)]
     ProcessSpawnFailed(io::Error),
 
-    #[error("Error occured in runc: {0}")]
+    #[error("Error occured in runh: {0}")]
     InvalidCommand(io::Error),
 
     #[error("Runh command failed: status={status}, stdout=\"{stdout}\", stderr=\"{stderr}\"")]
@@ -71,10 +71,10 @@ pub enum Error {
     #[error("Runh command timed out: {0}")]
     CommandTimeout(tokio::time::error::Elapsed),
 
-    #[error("Unable to parse runc version")]
+    #[error("Unable to parse runh version")]
     InvalidVersion,
 
-    #[error("Unable to locate the runc")]
+    #[error("Unable to locate the runh")]
     NotFound,
 
     #[error("Error occurs with fs: {0}")]
@@ -113,7 +113,7 @@ pub enum Error {
     #[error("Sorry, this part of api is not implemented: {0}")]
     Unimplemented(String),
 
-    #[error("Error occured in runc client: {0}")]
+    #[error("Error occured in runh client: {0}")]
     Other(Box<dyn std::error::Error + Send>),
 
     #[error("Failed to set cmd io: {0}")]

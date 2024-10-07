@@ -35,7 +35,7 @@
 
 #![cfg_attr(feature = "docs", doc = include_str!("../README.md"))]
 
-//! A crate for consuming the runc binary in your Rust applications, similar to
+//! A crate for consuming the runh binary in your Rust applications, similar to
 //! [go-runc](https://github.com/containerd/go-runc) for Go.
 use std::{
     fmt::{self, Debug, Display},
@@ -73,7 +73,7 @@ pub struct Response {
 
 #[derive(Debug, Clone)]
 pub struct Version {
-    pub runc_version: Option<String>,
+    pub runh_version: Option<String>,
     pub spec_version: Option<String>,
     pub commit: Option<String>,
 }
@@ -117,7 +117,7 @@ impl Runh {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
 
-        // NOTIFY_SOCKET introduces a special behavior in runc but should only be set if invoked from systemd
+        // NOTIFY_SOCKET introduces a special behavior in runh but should only be set if invoked from systemd
         cmd.args(&args).env_remove("NOTIFY_SOCKET");
 
         Ok(cmd)
@@ -490,7 +490,7 @@ impl Runh {
         Ok(())
     }
 
-    /// List all containers associated with this runc instance
+    /// List all containers associated with this runh instance
     pub async fn list(&self) -> Result<Vec<Container>> {
         let args = ["list".to_string(), "--format=json".to_string()];
         let res = self.launch(self.command(&args)?, true).await?;
@@ -671,7 +671,7 @@ mod tests {
         GlobalOpts::new()
             .command("/bin/echo")
             .build()
-            .expect("unable to create runc instance")
+            .expect("unable to create runh instance")
     }
 
     fn dummy_process() -> Process {
@@ -691,113 +691,113 @@ mod tests {
     #[test]
     fn test_create() {
         let opts = CreateOpts::new();
-        let ok_runc = ok_client();
-        let response = ok_runc
+        let ok_runh = ok_client();
+        let response = ok_runh
             .create("fake-id", "fake-bundle", Some(&opts))
             .expect("true failed.");
         assert_ne!(response.pid, 0);
         assert!(response.status.success());
         assert!(response.output.is_empty());
 
-        let fail_runc = fail_client();
-        match fail_runc.create("fake-id", "fake-bundle", Some(&opts)) {
-            Ok(_) => panic!("fail_runc returned exit status 0."),
+        let fail_runh = fail_client();
+        match fail_runh.create("fake-id", "fake-bundle", Some(&opts)) {
+            Ok(_) => panic!("fail_runh returned exit status 0."),
             Err(Error::CommandFailed {
                 status,
                 stdout,
                 stderr,
             }) => {
                 if status.code().unwrap() == 1 && stdout.is_empty() && stderr.is_empty() {
-                    eprintln!("fail_runc succeeded.");
+                    eprintln!("fail_runh succeeded.");
                 } else {
-                    panic!("unexpected outputs from fail_runc.")
+                    panic!("unexpected outputs from fail_runh.")
                 }
             }
-            Err(e) => panic!("unexpected error from fail_runc: {:?}", e),
+            Err(e) => panic!("unexpected error from fail_runh: {:?}", e),
         }
     }
 
     #[test]
     fn test_run() {
         let opts = CreateOpts::new();
-        let ok_runc = ok_client();
-        let response = ok_runc
+        let ok_runh = ok_client();
+        let response = ok_runh
             .run("fake-id", "fake-bundle", Some(&opts))
             .expect("true failed.");
         assert_ne!(response.pid, 0);
         assert!(response.status.success());
         assert!(response.output.is_empty());
 
-        let fail_runc = fail_client();
-        match fail_runc.run("fake-id", "fake-bundle", Some(&opts)) {
-            Ok(_) => panic!("fail_runc returned exit status 0."),
+        let fail_runh = fail_client();
+        match fail_runh.run("fake-id", "fake-bundle", Some(&opts)) {
+            Ok(_) => panic!("fail_runh returned exit status 0."),
             Err(Error::CommandFailed {
                 status,
                 stdout,
                 stderr,
             }) => {
                 if status.code().unwrap() == 1 && stdout.is_empty() && stderr.is_empty() {
-                    eprintln!("fail_runc succeeded.");
+                    eprintln!("fail_runh succeeded.");
                 } else {
-                    panic!("unexpected outputs from fail_runc.")
+                    panic!("unexpected outputs from fail_runh.")
                 }
             }
-            Err(e) => panic!("unexpected error from fail_runc: {:?}", e),
+            Err(e) => panic!("unexpected error from fail_runh: {:?}", e),
         }
     }
 
     #[test]
     fn test_exec() {
         let opts = ExecOpts::new();
-        let ok_runc = ok_client();
+        let ok_runh = ok_client();
         let proc = dummy_process();
-        ok_runc
+        ok_runh
             .exec("fake-id", &proc, Some(&opts))
             .expect("true failed.");
-        eprintln!("ok_runc succeeded.");
+        eprintln!("ok_runh succeeded.");
 
-        let fail_runc = fail_client();
-        match fail_runc.exec("fake-id", &proc, Some(&opts)) {
-            Ok(_) => panic!("fail_runc returned exit status 0."),
+        let fail_runh = fail_client();
+        match fail_runh.exec("fake-id", &proc, Some(&opts)) {
+            Ok(_) => panic!("fail_runh returned exit status 0."),
             Err(Error::CommandFailed {
                 status,
                 stdout,
                 stderr,
             }) => {
                 if status.code().unwrap() == 1 && stdout.is_empty() && stderr.is_empty() {
-                    eprintln!("fail_runc succeeded.");
+                    eprintln!("fail_runh succeeded.");
                 } else {
-                    panic!("unexpected outputs from fail_runc.")
+                    panic!("unexpected outputs from fail_runh.")
                 }
             }
-            Err(e) => panic!("unexpected error from fail_runc: {:?}", e),
+            Err(e) => panic!("unexpected error from fail_runh: {:?}", e),
         }
     }
 
     #[test]
     fn test_delete() {
         let opts = DeleteOpts::new();
-        let ok_runc = ok_client();
-        ok_runc
+        let ok_runh = ok_client();
+        ok_runh
             .delete("fake-id", Some(&opts))
             .expect("true failed.");
-        eprintln!("ok_runc succeeded.");
+        eprintln!("ok_runh succeeded.");
 
-        let fail_runc = fail_client();
-        match fail_runc.delete("fake-id", Some(&opts)) {
-            Ok(_) => panic!("fail_runc returned exit status 0."),
+        let fail_runh = fail_client();
+        match fail_runh.delete("fake-id", Some(&opts)) {
+            Ok(_) => panic!("fail_runh returned exit status 0."),
             Err(Error::CommandFailed {
                 status,
                 stdout,
                 stderr,
             }) => {
                 if status.code().unwrap() == 1 && stdout.is_empty() && stderr.is_empty() {
-                    eprintln!("fail_runc succeeded.");
+                    eprintln!("fail_runh succeeded.");
                 } else {
-                    panic!("unexpected outputs from fail_runc.")
+                    panic!("unexpected outputs from fail_runh.")
                 }
             }
-            Err(e) => panic!("unexpected error from fail_runc: {:?}", e),
+            Err(e) => panic!("unexpected error from fail_runh: {:?}", e),
         }
     }
 
@@ -806,8 +806,8 @@ mod tests {
         // test create cmd with inherit Io, expect empty cmd output
         let mut opts = CreateOpts::new();
         opts.io = Some(Arc::new(InheritedStdIo::new().unwrap()));
-        let echo_runc = echo_client();
-        let response = echo_runc
+        let echo_runh = echo_client();
+        let response = echo_runh
             .create("fake-id", "fake-bundle", Some(&opts))
             .expect("echo failed.");
         assert_ne!(response.pid, 0);
@@ -817,8 +817,8 @@ mod tests {
         // test create cmd with pipe Io, expect nonempty cmd output
         let mut opts = CreateOpts::new();
         opts.io = Some(Arc::new(PipedStdIo::new().unwrap()));
-        let echo_runc = echo_client();
-        let response = echo_runc
+        let echo_runh = echo_client();
+        let response = echo_runh
             .create("fake-id", "fake-bundle", Some(&opts))
             .expect("echo failed.");
         assert_ne!(response.pid, 0);
@@ -842,29 +842,29 @@ mod tests {
         GlobalOpts::new()
             .command("/bin/true")
             .build()
-            .expect("unable to create runc instance")
+            .expect("unable to create runh instance")
     }
 
     fn fail_client() -> Runh {
         GlobalOpts::new()
             .command("/bin/false")
             .build()
-            .expect("unable to create runc instance")
+            .expect("unable to create runh instance")
     }
 
     fn echo_client() -> Runh {
         GlobalOpts::new()
             .command("/bin/echo")
             .build()
-            .expect("unable to create runc instance")
+            .expect("unable to create runh instance")
     }
 
     #[tokio::test]
     async fn test_async_create() {
         let opts = CreateOpts::new();
-        let ok_runc = ok_client();
+        let ok_runh = ok_client();
         let ok_task = tokio::spawn(async move {
-            let response = ok_runc
+            let response = ok_runh
                 .create("fake-id", "fake-bundle", Some(&opts))
                 .await
                 .expect("true failed.");
@@ -874,25 +874,25 @@ mod tests {
         });
 
         let opts = CreateOpts::new();
-        let fail_runc = fail_client();
+        let fail_runh = fail_client();
         let fail_task = tokio::spawn(async move {
-            match fail_runc
+            match fail_runh
                 .create("fake-id", "fake-bundle", Some(&opts))
                 .await
             {
-                Ok(_) => panic!("fail_runc returned exit status 0."),
+                Ok(_) => panic!("fail_runh returned exit status 0."),
                 Err(Error::CommandFailed {
                     status,
                     stdout,
                     stderr,
                 }) => {
                     if status.code().unwrap() == 1 && stdout.is_empty() && stderr.is_empty() {
-                        eprintln!("fail_runc succeeded.");
+                        eprintln!("fail_runh succeeded.");
                     } else {
-                        panic!("unexpected outputs from fail_runc.")
+                        panic!("unexpected outputs from fail_runh.")
                     }
                 }
-                Err(e) => panic!("unexpected error from fail_runc: {:?}", e),
+                Err(e) => panic!("unexpected error from fail_runh: {:?}", e),
             }
         });
 
@@ -902,28 +902,28 @@ mod tests {
 
     #[tokio::test]
     async fn test_async_start() {
-        let ok_runc = ok_client();
+        let ok_runh = ok_client();
         let ok_task = tokio::spawn(async move {
-            ok_runc.start("fake-id").await.expect("true failed.");
-            eprintln!("ok_runc succeeded.");
+            ok_runh.start("fake-id").await.expect("true failed.");
+            eprintln!("ok_runh succeeded.");
         });
 
-        let fail_runc = fail_client();
+        let fail_runh = fail_client();
         let fail_task = tokio::spawn(async move {
-            match fail_runc.start("fake-id").await {
-                Ok(_) => panic!("fail_runc returned exit status 0."),
+            match fail_runh.start("fake-id").await {
+                Ok(_) => panic!("fail_runh returned exit status 0."),
                 Err(Error::CommandFailed {
                     status,
                     stdout,
                     stderr,
                 }) => {
                     if status.code().unwrap() == 1 && stdout.is_empty() && stderr.is_empty() {
-                        eprintln!("fail_runc succeeded.");
+                        eprintln!("fail_runh succeeded.");
                     } else {
-                        panic!("unexpected outputs from fail_runc.")
+                        panic!("unexpected outputs from fail_runh.")
                     }
                 }
-                Err(e) => panic!("unexpected error from fail_runc: {:?}", e),
+                Err(e) => panic!("unexpected error from fail_runh: {:?}", e),
             }
         });
 
@@ -934,35 +934,35 @@ mod tests {
     #[tokio::test]
     async fn test_async_run() {
         let opts = CreateOpts::new();
-        let ok_runc = ok_client();
+        let ok_runh = ok_client();
         tokio::spawn(async move {
-            ok_runc
+            ok_runh
                 .create("fake-id", "fake-bundle", Some(&opts))
                 .await
                 .expect("true failed.");
-            eprintln!("ok_runc succeeded.");
+            eprintln!("ok_runh succeeded.");
         });
 
         let opts = CreateOpts::new();
-        let fail_runc = fail_client();
+        let fail_runh = fail_client();
         tokio::spawn(async move {
-            match fail_runc
+            match fail_runh
                 .create("fake-id", "fake-bundle", Some(&opts))
                 .await
             {
-                Ok(_) => panic!("fail_runc returned exit status 0."),
+                Ok(_) => panic!("fail_runh returned exit status 0."),
                 Err(Error::CommandFailed {
                     status,
                     stdout,
                     stderr,
                 }) => {
                     if status.code().unwrap() == 1 && stdout.is_empty() && stderr.is_empty() {
-                        eprintln!("fail_runc succeeded.");
+                        eprintln!("fail_runh succeeded.");
                     } else {
-                        panic!("unexpected outputs from fail_runc.")
+                        panic!("unexpected outputs from fail_runh.")
                     }
                 }
-                Err(e) => panic!("unexpected error from fail_runc: {:?}", e),
+                Err(e) => panic!("unexpected error from fail_runh: {:?}", e),
             }
         })
         .await
@@ -972,32 +972,32 @@ mod tests {
     #[tokio::test]
     async fn test_async_delete() {
         let opts = DeleteOpts::new();
-        let ok_runc = ok_client();
+        let ok_runh = ok_client();
         tokio::spawn(async move {
-            ok_runc
+            ok_runh
                 .delete("fake-id", Some(&opts))
                 .await
                 .expect("true failed.");
-            eprintln!("ok_runc succeeded.");
+            eprintln!("ok_runh succeeded.");
         });
 
         let opts = DeleteOpts::new();
-        let fail_runc = fail_client();
+        let fail_runh = fail_client();
         tokio::spawn(async move {
-            match fail_runc.delete("fake-id", Some(&opts)).await {
-                Ok(_) => panic!("fail_runc returned exit status 0."),
+            match fail_runh.delete("fake-id", Some(&opts)).await {
+                Ok(_) => panic!("fail_runh returned exit status 0."),
                 Err(Error::CommandFailed {
                     status,
                     stdout,
                     stderr,
                 }) => {
                     if status.code().unwrap() == 1 && stdout.is_empty() && stderr.is_empty() {
-                        eprintln!("fail_runc succeeded.");
+                        eprintln!("fail_runh succeeded.");
                     } else {
-                        panic!("unexpected outputs from fail_runc.")
+                        panic!("unexpected outputs from fail_runh.")
                     }
                 }
-                Err(e) => panic!("unexpected error from fail_runc: {:?}", e),
+                Err(e) => panic!("unexpected error from fail_runh: {:?}", e),
             }
         })
         .await
@@ -1009,8 +1009,8 @@ mod tests {
         // test create cmd with inherit Io, expect empty cmd output
         let mut opts = CreateOpts::new();
         opts.io = Some(Arc::new(InheritedStdIo::new().unwrap()));
-        let echo_runc = echo_client();
-        let response = echo_runc
+        let echo_runh = echo_client();
+        let response = echo_runh
             .create("fake-id", "fake-bundle", Some(&opts))
             .await
             .expect("echo failed:");
@@ -1021,7 +1021,7 @@ mod tests {
         // test create cmd with pipe Io, expect nonempty cmd output
         let mut opts = CreateOpts::new();
         opts.io = Some(Arc::new(PipedStdIo::new().unwrap()));
-        let response = echo_runc
+        let response = echo_runh
             .create("fake-id", "fake-bundle", Some(&opts))
             .await
             .expect("echo failed:");

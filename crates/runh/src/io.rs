@@ -73,7 +73,7 @@ pub trait Io: Debug + Send + Sync {
     /// Read side of stdin, write side of stdout and write side of stderr should be provided to command.
     fn set(&self, cmd: &mut Command) -> Result<()>;
 
-    /// Only close write side (should be stdout/err "from" runc process)
+    /// Only close write side (should be stdout/err "from" runh process)
     fn close_after_start(&self);
 }
 

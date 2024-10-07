@@ -38,7 +38,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use time::{serde::timestamp, OffsetDateTime};
 
-/// Information for runc container
+/// Information for runh container
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Container {
     pub id: String,
