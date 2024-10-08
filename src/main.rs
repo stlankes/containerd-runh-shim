@@ -52,5 +52,5 @@ fn parse_version() {
 #[tokio::main]
 async fn main() {
     parse_version();
-    run::<Service>("io.containerd.runh.v2-rs", None).await;
+    run::<Service>("io.containerd.runh.v2", None).await;
 }
