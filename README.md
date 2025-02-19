@@ -14,6 +14,6 @@ Copy binary to the containerd shim dir, e.g. `/usr/bin/`
 
 In order to use it from containerd, use:
 
-````shell
+```shell
 sudo ctr run --runtime "io.containerd.runh.v2" --rm -t ghcr.io/hermit-os/rusty_demo:latest demo
 ```
