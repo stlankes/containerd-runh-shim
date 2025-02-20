@@ -18,6 +18,6 @@ In order to use it from containerd, use:
 sudo ctr run --runtime "io.containerd.runh.v2" --rm -t ghcr.io/hermit-os/rusty_demo:latest demo
 ```
 
-# Funding
+## Funding
 
 The development of this project was partially funded by the European Union's Horizon Europe research and innovation programme under grant agreement No. 101070118 - NEMO.
